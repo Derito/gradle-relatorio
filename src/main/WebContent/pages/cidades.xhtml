@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+	
+<ui:define name="conteudo">
+	<h:form id="formListagem">
+		<p:panel header="Cidades - Listagem">
+			<p:dataTable id="tabelaListagem"
+				emptyMessage="Nenhum registo encontrado." paginator="true" 
+				value="#{cidadeBean.cidades}" var="cursor" rows="5">
+
+				<f:facet name="header">
+					<p:commandButton value="Novo" actionListener="#{cidadeBean.novo}"
+						oncomplete="PF('dialogo').show();" update=":msn :formCad:painel">
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</f:facet>
+
+				<p:column headerText="Nome da Cidade"
+					sortBy="#{cursor.nomeDaCidade}" filterBy="#{cursor.nomeDaCidade}">
+					<h:outputText value="#{cursor.nomeDaCidade}" />
+				</p:column>
+
+				<p:column headerText="Sigla da Cidade">
+					<h:outputText value="#{cursor.siglaDaCidade}" />
+				</p:column>
+
+				<p:column headerText="Pais" sortBy="#{cursor.pais.nomeDoPais}"
+					filterBy="#{cursor.pais.nomeDoPais}">
+					<h:outputText value="#{cursor.pais.nomeDoPais}" />
+					<h:outputText value=" - " />
+					<h:outputText value="#{cursor.pais.siglaDoPais}" />
+				</p:column>
+
+				<p:column headerText="Opções">
+					<p:commandButton icon="ui-icon-trash"
+						actionListener="#{cidadeBean.excluir}"
+						update=":msn :formListagem:tabelaListagem">
+						<p:confirm header="Confirmação"
+							message="Tem a certeza de que deseja excluir a cidade?"
+							icon="ui-icon-alert" />
+						<f:attribute name="cidadeSeleccionada" value="#{cursor}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-pencil"
+						actionListener="#{cidadeBean.editar}"
+						update=":msn :formCad:painel" oncomplete="PF('dialogo').show();">
+						<f:attribute name="cidadeSeleccionada" value="#{cursor}" />
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</p:panel>
+	</h:form>
+	<p:dialog header="Cidades - Cadastro" widgetVar="dialogo"
+		draggable="false" resizable="false" modal="true" closable="false">
+		<h:form id="formCad">
+			<h:panelGrid id="painel" columns="1">
+				<p:outputLabel for="nome" value="Nome:" />
+				<p:inputText id="nome" maxlength="50" size="30"
+					value="#{cidadeBean.cidade.nomeDaCidade}" required="true"
+					requiredMessage="O campo'Nome' é obrigatório!" />
+
+				<p:outputLabel for="sigla" value="Sigla:" />
+				<p:inputText id="sigla" maxlength="3" size="10"
+					value="#{cidadeBean.cidade.siglaDaCidade}" required="true"
+					requiredMessage="O campo'Sigla' é obrigatório!" />
+
+				<!-- Chave estrangeira -->
+				<p:outputLabel for="pais" value="Pais:" />
+				<p:selectOneMenu id="pais" filter="true"
+					value="#{cidadeBean.cidade.pais}"
+					converter="omnifaces.SelectItemsConverter" required="true"
+					requiredMessage="O campo'Pais' é obrigatório!">
+					<f:selectItem noSelectionOption="true"
+						itemLabel="Seleccione um Pais." />
+					<f:selectItems value="#{cidadeBean.paises}" var="cursor"
+						itemValue="#{cursor}"
+						itemLabel="#{cursor.nomeDoPais} - #{cursor.siglaDoPais}" />
+				</p:selectOneMenu>
+
+			</h:panelGrid>
+			<h:panelGrid columns="2">
+				<p:commandButton value="Salvar"
+					actionListener="#{cidadeBean.salvar}"
+					update=":msn :formCad:painel :formListagem:tabelaListagem" />
+				<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+			</h:panelGrid>
+		</h:form>
+	</p:dialog>
+	</ui:define>
+</ui:composition>

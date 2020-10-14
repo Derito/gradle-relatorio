@@ -1,0 +1,16 @@
+@charset "UTF-8";
+
+.imagemCentralizada{
+	display:block;
+	margin-right:auto;
+	
+}
+.divTopo {
+	
+	padding-bottom: 5px;
+}	
+.divCabecario {
+	
+	padding-bottom: 5px;
+}	
+

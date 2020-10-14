@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+	
+<ui:define name="conteudo">
+	<h:form id="formListagem">
+		<p:panel header="Publicadores - Listagem">
+			<p:dataTable id="tabelaListagem"
+				emptyMessage="Nenhum registo encontrado." paginator="true"
+				value="#{publicadorBean.publicadores}" var="cursor" rows="5">
+
+				<f:facet name="header">
+					<p:commandButton value="Novo"
+						actionListener="#{publicadorBean.novo}"
+						oncomplete="PF('dialogo').show();" update=":msn :formCad:painel">
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</f:facet>
+
+				<p:column headerText="Data Inicio"
+					sortBy="#{cursor.inicioPublicador}"
+					filterBy="#{cursor.inicioPublicador}">
+					<h:outputText value="#{cursor.inicioPublicador}" />
+				</p:column>
+
+				<p:column headerText="Pessoa" sortBy="#{cursor.pessoa.nomePessoa}"
+					filterBy="#{cursor.pessoa.nomePessoa}">
+					<h:outputText value="#{cursor.pessoa.nomePessoa}" />
+				</p:column>
+				 
+				<p:column headerText="Congregaçao" sortBy="#{cursor.congregacao.nomeDaCongregacao}"
+					filterBy="#{cursor.congregacao.nomeDaCongregacao}">
+					<h:outputText value="#{cursor.congregacao.nomeDaCongregacao}" />					
+				</p:column>
+
+				<p:column headerText="Opções">
+					<p:commandButton icon="ui-icon-trash"
+						actionListener="#{publicadorBean.excluir}"
+						update=":msn :formListagem:tabelaListagem">
+						<p:confirm header="Confirmação"
+							message="Tem a certeza de que deseja excluir o publicador?"
+							icon="ui-icon-alert" />
+						<f:attribute name="publicadorSeleccionado" value="#{cursor}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-pencil"
+						actionListener="#{publicadorBean.editar}"
+						update=":msn :formCad:painel" oncomplete="PF('dialogo').show();">
+						<f:attribute name="publicadorSeleccionado" value="#{cursor}" />
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</p:panel>
+	</h:form>
+	<p:dialog header="Publicadores - Cadastro" widgetVar="dialogo"
+		draggable="false" resizable="false" modal="true" closable="false">
+		<h:form id="formCad">
+			<h:panelGrid id="painel" columns="1">
+				<p:outputLabel for="data" value="Data de Inicio:" />
+				<p:calendar id="data" value="#{publicadorBean.publicador.inicioPublicador}"
+					required="true" requiredMessage="O campo'Data' é obrigatório!" />
+
+				<!-- Chave estrangeira -->
+				<p:outputLabel for="pessoa" value="Nome:" />
+				<p:selectOneMenu id="pessoa" filter="true"
+					value="#{publicadorBean.publicador.pessoa}"
+					converter="omnifaces.SelectItemsConverter" required="true"
+					requiredMessage="O campo'Nome' é obrigatório!">
+					<f:selectItem noSelectionOption="true"
+						itemLabel="Seleccione uma Pessoa." />
+					<f:selectItems value="#{publicadorBean.publicadores}" var="cursor"
+						itemValue="#{cursor}" itemLabel="#{cursor.pessoa.nomePessoa}" />
+				</p:selectOneMenu>
+				
+				<p:outputLabel for="congregacao" value="Congregaçao:" />
+				<p:selectOneMenu id="congregacao" filter="true"
+					value="#{publicadorBean.publicador.congregacao}"
+					converter="omnifaces.SelectItemsConverter" required="true"
+					requiredMessage="O campo'Congregaçao' é obrigatório!">
+					<f:selectItem noSelectionOption="true"
+						itemLabel="Seleccione uma Congregaçao." />
+					<f:selectItems value="#{publicadorBean.publicadores}" var="cursor"
+						itemValue="#{cursor}"
+						itemLabel="#{cursor.congregacao.nomeDaCongregacao}" />
+				</p:selectOneMenu>
+
+			</h:panelGrid>
+			<h:panelGrid columns="2">
+				<p:commandButton value="Salvar"
+					actionListener="#{publicadorBean.salvar}"
+					update=":msn :formCad:painel :formListagem:tabelaListagem" />
+				<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+			</h:panelGrid>
+		</h:form>
+	</p:dialog>
+	</ui:define>
+</ui:composition>

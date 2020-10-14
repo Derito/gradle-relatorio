@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Cadastro de Relatorios</title>
+</h:head>
+<h:body>
+	<p:growl id="msn" />
+	<h:form id="formListagem">
+		<p:panel header="Relatorios - Listagem">
+			<p:dataTable id="tabelaListagem" emptyMessage="Nenhum registo encontrado."
+				paginator="true" value="#{relatorioBean.relatorios}" var="cursor"
+				rows="5">
+
+				<f:facet name="header">
+					<p:commandButton value="Novo" 
+						actionListener="#{relatorioBean.novo}"
+						oncomplete="PF('dialogo').show();" update=":msn :formCad:painel">						
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</f:facet>
+				<!-- Nome esta ligado a publicador e este a pessoa  chave estrangeira
+				<p:column headerText="Nome"
+					ortBy="#{cursor.publicador.pessoa.nomePessoa}"
+					filterBy="#{cursor.publicador.pessoa.nomePessoa}">
+					<h:outputText value="#{cursor.publicador.pessoa.nomePessoa}" />
+				</p:column>-->
+
+				<p:column headerText="Horas dia" sortBy="#{cursor.horaDia}"
+					filterBy="#{cursor.horaDia}">
+					<h:outputText value="#{cursor.horaDia}" />
+				</p:column>
+
+				<p:column headerText="Horas mes">
+					<h:outputText value="#{cursor.totHoraMes}" />
+				</p:column>
+
+				<p:column headerText="Horas Totais">
+					<h:outputText value="#{cursor.totalHoras}" />
+				</p:column>
+
+				<p:column headerText="Revistas dia">
+					<h:outputText value="#{cursor.revistaDia}" />
+				</p:column>
+
+				<p:column headerText="Revistas mes">
+					<h:outputText value="#{cursor.totRevistaMes}" />
+				</p:column>
+
+				<p:column headerText="Revistas Totais">
+					<h:outputText value="#{cursor.totRevistaMes}" />
+				</p:column>
+
+				<p:column headerText="Revisitas dia">
+					<h:outputText value="#{cursor.revisitaDia}" />
+				</p:column>
+
+				<p:column headerText="Revisitas mes">
+					<h:outputText value="#{cursor.totRevisitaMes}" />
+				</p:column>
+
+				<p:column headerText="Revisitas Totais">
+					<h:outputText value="#{cursor.totalRevisitas}" />
+				</p:column>
+
+				<p:column headerText="Video dia">
+					<h:outputText value="#{cursor.videoDia}" />
+				</p:column>
+
+				<p:column headerText="Video mes">
+					<h:outputText value="#{cursor.totVideoMes}" />
+				</p:column>
+
+				<p:column headerText="Video Totais">
+					<h:outputText value="#{cursor.totalVideos}" />
+				</p:column>
+
+				<p:column headerText="Estudos dia">
+					<h:outputText value="#{cursor.estudoDia}" />
+				</p:column>
+
+				<p:column headerText="Estudos mes">
+					<h:outputText value="#{cursor.totEstudoMes}" />
+				</p:column>
+
+				<p:column headerText="Estudos Totais">
+					<h:outputText value="#{cursor.totalEstudos}" />
+				</p:column>
+
+				<p:column headerText="Folhetos dia">
+					<h:outputText value="#{cursor.folhetosDia}" />
+				</p:column>
+
+				<p:column headerText="Folhetos mes">
+					<h:outputText value="#{cursor.totFolhetosMes}" />
+				</p:column>
+
+				<p:column headerText="Folhetos totais">
+					<h:outputText value="#{cursor.totalFolhetos}" />
+				</p:column>
+
+				<p:column headerText="Observações">
+					<h:outputText value="#{cursor.observacoes}" />
+				</p:column>
+
+				<p:column headerText="Tipo de Formulario">
+					<h:outputText value="#{cursor.tipoFormulario}" />
+				</p:column>
+
+				<p:column headerText="Mes">
+					<h:outputText value="#{cursor.mes}" />
+				</p:column>
+
+				<p:column headerText="Opções">
+					<p:commandButton icon="ui-icon-trash"
+						actionListener="#{relatorioBean.excluir}"
+						update=":msn :formListagem:tabelaListagem">
+						<p:confirm header="Confirmação"
+							message="Tem a certeza de que deseja excluir o relatório?"
+							icon="ui-icon-alert" />
+						<f:attribute name="relatorioSeleccionado" value="#{cursor}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-pencil"
+						actionListener="#{relatorioBean.editar}"
+						update=":msn :formCad:painel" oncomplete="PF('dialogo').show();">
+						<f:attribute name="relatorioSeleccionado" value="#{cursor}" />
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</p:panel>
+	</h:form>
+	<p:dialog header="Relatorios - Cadastro" widgetVar="dialogo"
+		draggable="false" resizable="false" modal="true" closable="false">
+		<h:form id="formCad">
+			<h:panelGrid id="painel" columns="2">
+				<!-- Chave estrangeira 
+				<p:outputLabel for="nome" value="Nome:" />
+				<p:selectOneMenu id="nome" filter="true"
+					value="#{relatorioBean.relatorio.publicador}"
+					converter="omnifaces.SelectItemsConverter" required="true"
+					requiredMessage="O campo'Nome' é obrigatório!">
+					<f:selectItem noSelectionOption="true"
+						itemLabel="Seleccione um Publicador." />
+					<f:selectItems value="#{relatorioBean.publicadores}" var="cursor"
+						itemValue="#{cursor}" itemLabel="#{cursor.pessoa.nomePessoa}" />
+				</p:selectOneMenu>-->
+
+				<p:outputLabel value="Hora dia:" />
+				<p:inputText maxlength="50" size="30"
+					value="#{relatorioBean.relatorio.horaDia}" required="true"
+					requiredMessage="O campo'Hora dia' é obrigatório!" 
+					converterMessage ="O valor digitado no campo 'Hora Dia' é invalido."/>
+
+				<p:outputLabel value="Hora Mês:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.totHoraMes}" required="true"
+					requiredMessage="O campo'Hora Mes' é obrigatório!" 
+					converterMessage ="O valor digitado no campo 'Hora Mes' é invalido."/>
+
+				<p:outputLabel value="Total de Horas:" />
+				<p:inputText maxlength="50" size="30"
+					value="#{relatorioBean.relatorio.totalHoras}" 
+					converterMessage ="O valor digitado no campo 'Total de Horas' é invalido."/>
+
+				<p:outputLabel value="Revista Dia:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.revisitaDia}" 
+					converterMessage ="O valor digitado no campo 'Revista dia' é invalido.">
+					<f:validateLongRange minimum="0" maximum="10" />
+				</p:inputText>
+
+				<p:outputLabel value="Revista Mês:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.totRevistaMes}" 
+					converterMessage ="O valor digitado no campo 'Revista Mes' é invalido.">
+					<f:validateLongRange minimum="0" maximum="100" />
+				</p:inputText>
+
+				<p:outputLabel value="Total de Revistas:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.totalRevistas}"
+					converterMessage ="O valor digitado no campo 'Total de Revistas' é invalido.">
+					<f:validateLongRange minimum="0" maximum="1000" />
+				</p:inputText>
+
+				<p:outputLabel value="Revisita Dia:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.revisitaDia}"
+					converterMessage ="O valor digitado no campo 'Revisita dia' é invalido." >
+					<f:validateLongRange minimum="0" maximum="10" />
+				</p:inputText>
+
+				<p:outputLabel value="Revisita Mês:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.totRevisitaMes}" 
+					converterMessage ="O valor digitado no campo 'Revisita Mes' é invalido.">
+					<f:validateLongRange minimum="0" maximum="100" />
+				</p:inputText>
+
+				<p:outputLabel value="Total de Revisitas:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.totalRevisitas}" 
+					converterMessage ="O valor digitado no campo 'Total de Revisitas' é invalido.">
+					<f:validateLongRange minimum="0" maximum="1000" />
+				</p:inputText>
+
+				<p:outputLabel value="Videos Dia:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.videoDia}"
+					converterMessage ="O valor digitado no campo 'Videos dia' é invalido." >
+					<f:validateLongRange minimum="0" maximum="10" />
+				</p:inputText>
+
+				<p:outputLabel value="Video Mês:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.totVideoMes}" 
+					converterMessage ="O valor digitado no campo 'Videos Mes' é invalido.">
+					<f:validateLongRange minimum="0" maximum="100" />
+				</p:inputText>
+
+				<p:outputLabel value="Total de Videos:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.totalVideos}"
+					converterMessage ="O valor digitado no campo 'Total de Videos' é invalido." >
+					<f:validateLongRange minimum="0" maximum="1000" />
+				</p:inputText>
+
+				<p:outputLabel value="Estudos Dia:" />
+				<p:inputText maxlength="30" size="10"
+					value="#{relatorioBean.relatorio.estudoDia}" 
+					converterMessage ="O valor digitado no campo 'Estudo Dia' é invalido.">
+					<f:validateLongRange minimum="0" maximum="10" />
+				</p:inputText>
+
+				<p:outputLabel value="Estudos Mês:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.totEstudoMes}"
+					converterMessage ="O valor digitado no campo 'Estudo Mes' é invalido." >
+					<f:validateLongRange minimum="0" maximum="100" />
+				</p:inputText>
+
+				<p:outputLabel value="Total de Estudos:" />
+				<p:inputText maxlength="30" size="10"
+					value="#{relatorioBean.relatorio.totalEstudos}" 
+					converterMessage ="O valor digitado no campo 'Total de Estudos' é invalido.">
+					<f:validateLongRange minimum="0" maximum="1000" />
+				</p:inputText>
+
+				<p:outputLabel value="Folhetos Dia:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.folhetosDia}" 
+					converterMessage ="O valor digitado no campo 'Folhetos Dia' é invalido.">
+				<f:validateLongRange minimum="0" maximum="10" />
+				</p:inputText>	
+
+				<p:outputLabel value="Folhetos Mês:" />
+				<p:inputText maxlength="30" size="10"
+					value="#{relatorioBean.relatorio.totFolhetosMes}" 
+					converterMessage ="O valor digitado no campo 'Folhetos Mes' é invalido.">
+				<f:validateLongRange minimum="0" maximum="100" />
+				</p:inputText>
+				
+				<p:outputLabel value="Totais de Folhetos:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.totalFolhetos}" 
+					converterMessage ="O valor digitado no campo 'Total de Folhetos' é invalido.">
+					<f:validateLongRange minimum="0" maximum="1000" />
+				</p:inputText>
+
+				<p:outputLabel value="Observações:" />
+				<p:inputText maxlength="50" size="30"
+					value="#{relatorioBean.relatorio.observacoes}" />
+
+				<p:outputLabel value="Tipo de Formulário:" />
+				<p:inputText maxlength="3" size="10"
+					value="#{relatorioBean.relatorio.tipoFormulario}" />
+
+				<p:outputLabel value="Mes:" />
+				<p:inputText maxlength="20" size="20"
+					value="#{relatorioBean.relatorio.mes}" />
+
+			</h:panelGrid>
+			<h:panelGrid columns="2">
+				<p:commandButton value="Salvar"
+					actionListener="#{relatorioBean.salvar}"
+					update=":msn :formCad:painel :formListagem:tabelaListagem" />
+				<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+			</h:panelGrid>
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>
