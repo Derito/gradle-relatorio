@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/templates/modelo.xhtml">
+
+	<ui:define name="conteudo">
+	<h:outputScript library="js" name="scripts.js"/>
+		<h:form id="formListagem">
+			<p:panel header="Anciaos - Listagem">
+				<p:dataTable id="tabelaListagem"
+					emptyMessage="Nenhum registo encontrado." paginator="true"
+					value="#{anciaoBean.anciaos}" var="cursor" rows="5">
+
+					<f:facet name="header">
+						<p:commandButton value="Novo" actionListener="#{anciaoBean.novo}"
+							oncomplete="PF('dialogo').show();" update=":msn :formCad:painel">
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</f:facet>
+
+					<p:column headerText="Data da Designação"
+						sortBy="#{cursor.dataDaDesignacao}"
+						filterBy="#{cursor.dataDaDesignacao}">
+						<h:outputText value="#{cursor.dataDaDesignacao}" />
+					</p:column>
+
+					<p:column headerText="Designação" sortBy="#{cursor.designacao}"
+						filterBy="#{cursor.designacao}">
+						<h:outputText value="#{cursor.designacao}" />
+					</p:column>
+
+					<p:column headerText="Nome" sortBy="#{cursor.publicador}"
+						filterBy="#{cursor.publicador}">
+						<h:outputText value="#{cursor.publicador}" />
+					</p:column>
+
+					<p:column headerText="Opções">
+					<p:commandButton icon="ui-icon-trash"
+						actionListener="#{anciaoBean.excluir}"
+						update=":msn :formListagem:tabelaListagem">
+						<p:confirm header="Confirmação"
+							message="Tem a certeza de que deseja excluir o anciao?"
+							icon="ui-icon-alert" />
+						<f:attribute name="anciaoSeleccionado" value="#{cursor}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-pencil"
+						actionListener="#{anciaoBean.editar}"
+						update=":msn :formCad:painel" oncomplete="PF('dialogo').show();">
+						<f:attribute name="anciaoSeleccionado" value="#{cursor}" />
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+					</p:column>
+
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+		<p:dialog header="Anciaos - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" modal="true" closable="false">
+			<h:form id="formCad">
+				<h:panelGrid id="painel" columns="1">
+					<p:outputLabel for="dataCadastro" value="Data da Designação:" />
+					<p:calendar id="dataCadastro" value="#{anciaoBean.anciao.inicioAnciao}" required="true"
+					requiredMessage="O campo'Data Cadastro' é obrigatório!" size="10" locale="pt_PT"/>
+
+					<p:outputLabel value="Designação:" />
+					<p:inputText maxlength="30" size="30" />
+
+					<!-- Chave estrangeira vem de publicador e pessoa -->
+					<p:outputLabel for="nome" value="Nome:" />
+					<p:selectOneMenu id="nome" filter="true" value=""
+						converter="omnifaces.SelectItemsConverter" required="true"
+						requiredMessage="O campo'Nome' é obrigatório!">
+						<f:selectItem noSelectionOption="true"
+							itemLabel="Seleccione um Publicador." />
+						<f:selectItems value="#{anciaoBean.publicadores}" var="cursor"
+							itemValue="#{cursor}" itemLabel="#{cursor.publicador.pessoa.nomePessoa}" />
+					</p:selectOneMenu>
+
+				</h:panelGrid>
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar"
+						actionListener="#{anciaoBean.salvar}"
+						update=":msn :formCad:painel :formListagem:tabelaListagem" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
